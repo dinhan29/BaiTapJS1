@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Quan Ly Sinh Vien</title>
+	<style type="text/css">
+		label {
+			width: 100px;
+			float: left;
+		}
+		.error {
+			color: red;
+		}
+	</style>
+	<script src='https://cdn.jsdelivr.net/g/lodash@4(lodash.min.js+lodash.fp.min.js)'></script>
+	
+</head>
+<body onload="renderList()">
+	<div class="form-student">
+		<label class="abc">Mã Sinh Viên</label>
+		<input type="text" id="id">
+		<span id="id-error" class="error"></span>
+		<br>
+		<label>Tên Sinh Viên</label>
+		<input type="text" id="name">
+		<span id="name-error" class="error"></span>
+		<br>
+		<label>Email</label>
+		<input type="text" id="email">
+		<span id="email-error" class="error"></span>
+		<br>
+		<label>&nbsp;</label>
+		<button id="btn-save">Save</button>
+	</div>
+	<div class="list-student" id="list-student">
+		<h3>Danh Sách Sinh Viên</h3>
+	    <table id="grid-students">
+
+	    </table>
+	</div>
+	<script type="text/javascript">
+	function Save() {
+		var btn = document.getElementById("btn-save");
+		btn.onclick=function()
+
+		{
+			var id=document.getElementById("id").value;
+	        var name=document.getElementById("name").value;
+	        var email=document.getElementById("email").value;
+	       	var flag = true;
+	        if(_.isEmpty(id)){
+	        	document.getElementById("id-error").innerHTML="  Mời bạn nhập thông tin";
+	        	flag = false;
+	        } else {
+	        	document.getElementById("id-error").innerHTML=""
+	        }
+
+	        if(_.isEmpty(name)){
+	        	document.getElementById("name-error").innerHTML="  Mời bạn nhập thông tin";
+	        	flag = false;
+	        }else {
+	        	document.getElementById("name-error").innerHTML=""
+	        }
+
+	        if(_.isEmpty(email)){
+	        	document.getElementById("email-error").innerHTML="  Mời bạn nhập thông tin";
+	        	flag = false;
+	        } else {
+	        	document.getElementById("email-error").innerHTML=""
+	        }
+	        if(flag){
+	        	console.log("abc")
+			let students = localStorage.getItem('students') ? JSON.parse(localStorage.getItem('students')) :  [] ;
+        	students.push({
+        		id:id,
+        		name:name,
+        		email:email
+
+        	});
+        	localStorage.setItem('students',JSON.stringify(students));
+        	renderList();   
+			}	
+		}
+		
+	}
+	function renderList()
+	{
+		let students = localStorage.getItem('students') ? JSON.parse(localStorage.getItem('students')) :  [] ;
+		if(students.length==0)
+		{
+			document.getElementById("list-student").style.display='none';
+			return false;
+		}
+		document.getElementById("list-student").style.display='block';
+		let tableContent=`
+	        	<tr>
+	        	    <td>STT</td>
+		    		<td>Mã Sinh Viên</td>
+		    		<td>Tên Sinh Viên</td>
+		    		<td>Email</td>
+		    	</tr>`;
+		students.forEach((student,index)=>{
+		 	let studentId= index;
+		 	index++;
+	        tableContent += `
+	             <tr>
+		    		<td>${index}</td>
+		    		<td>${student.id}</td>
+		    		<td>${student.name}</td>
+		    		<td>${student.email}</td>
+		    		<td>
+		    		<a href="#" onclick='updateStudent(${studentId})'>Edit</a> | 
+		    		<a href="#" onclick='deleteStudent(${studentId})'>Delete</a>
+		    		</td>
+		    	</tr>`;
+
+	    });
+	    document.getElementById("grid-students").innerHTML=tableContent;
+	}
+	function deleteStudent(id)
+	{
+		let students = localStorage.getItem('students') ? JSON.parse(localStorage.getItem('students')) :  [] ;
+		students.splice(id,1);
+		localStorage.setItem('students',JSON.stringify(students));
+		renderList();
+	}
+	Save();
+	</script>
+</body>
+</html>
